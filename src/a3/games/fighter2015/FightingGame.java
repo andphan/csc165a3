@@ -211,13 +211,14 @@ public class FightingGame extends BaseGame implements KeyListener{
  		scene = new Group("Root Node"); 
  		 
  	   skybox = new SkyBox("SkyBox", 20.0f, 20.0f, 20.0f); 
- 		 
- 		Texture northTex = TextureManager.loadTexture2D("./images/heightMapTest.jpg"); 
- 		Texture southTex = TextureManager.loadTexture2D("./images/heightMapTest.jpg");
-      Texture eastTex = TextureManager.loadTexture2D("./images/lotTest.jpg"); 
- 		Texture westTex = TextureManager.loadTexture2D("./images/lotTest.jpg");
-      Texture upTex = TextureManager.loadTexture2D("./images/clouds.jpg"); 
- 		Texture downTex = TextureManager.loadTexture2D("./images/lot_floor.jpg");  
+ 
+ 		Texture northTex = TextureManager.loadTexture2D("src/a3/images/heightMapTest.jpg"); 
+ 		Texture southTex = TextureManager.loadTexture2D("src/a3/images/heightMapTest.jpg");
+      Texture eastTex = TextureManager.loadTexture2D("src/a3/images/lotTest.jpg"); 
+ 		Texture westTex = TextureManager.loadTexture2D("src/a3/images/lotTest.jpg");
+      Texture upTex = TextureManager.loadTexture2D("src/a3/images/clouds.jpg"); 
+ 		Texture downTex = TextureManager.loadTexture2D("src/a3/images/lot_floor.jpg");  
+
  		 
  	   skybox.setTexture(SkyBox.Face.North, northTex); 
  	   skybox.setTexture(SkyBox.Face.South, southTex);
