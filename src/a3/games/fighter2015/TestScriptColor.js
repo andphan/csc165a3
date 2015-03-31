@@ -21,6 +21,7 @@ with (JavaPackages)
   
  function updateCharacter(character)
  {
- character.setColor(java.awt.Color.blue);
+ character.setColor(java.awt.Color.orange);
+ character.scale(10, 10, 10);
  }
 }

@@ -151,6 +151,7 @@ public class FightingGame extends BaseGame implements KeyListener{
    private MyClient thisClient;
    
    private TerrainBlock parkingLot;
+   private TerrainPage parkingLotT;
    private Group rootNode;
    private SceneNode lineNodes; 
    private SkyBox skybox; 
@@ -256,7 +257,7 @@ public class FightingGame extends BaseGame implements KeyListener{
  	{ 
  		scene = new Group("Root Node"); 
  		 
- 	   skybox = new SkyBox("SkyBox", 20.0f, 20.0f, 20.0f); 
+ 	   skybox = new SkyBox("SkyBox", 100.0f, 100.0f, 100.0f); 
  
  		Texture northTex = TextureManager.loadTexture2D("src/a3/images/heightMapTest.jpg"); 
  		Texture southTex = TextureManager.loadTexture2D("src/a3/images/heightMapTest.jpg");
@@ -265,7 +266,8 @@ public class FightingGame extends BaseGame implements KeyListener{
       Texture upTex = TextureManager.loadTexture2D("src/a3/images/clouds.jpg"); 
  		Texture downTex = TextureManager.loadTexture2D("src/a3/images/lot_floor.jpg");  
  		Texture testTerr = TextureManager.loadTexture2D("src/a3/images/squaresquare.bmp");
-
+ 		Texture floorTest = TextureManager.loadTexture2D("src/a3/images/testFloor.bmp");
+ 		Texture testMountain = TextureManager.loadTexture2D("src/a3/images/mountains512.jpg");
  		 
  	   skybox.setTexture(SkyBox.Face.North, northTex); 
  	   skybox.setTexture(SkyBox.Face.South, southTex);
@@ -273,18 +275,14 @@ public class FightingGame extends BaseGame implements KeyListener{
       skybox.setTexture(SkyBox.Face.East, eastTex); 
  	   skybox.setTexture(SkyBox.Face.West, westTex); 
       
-      skybox.setTexture(SkyBox.Face.Up, upTex); 
+     skybox.setTexture(SkyBox.Face.Up, upTex); 
  	   skybox.setTexture(SkyBox.Face.Down, downTex); 
  	   scene.addChild(skybox); 
  		 
- 		Pyramid pyr = new Pyramid("Pyramid"); 
- 		pyr.translate(5, 2, 2); 
- 		 
- 	 
  		AbstractHeightMap heightmap = null; 
  
  
- 		heightmap = new ImageBasedHeightMap(testTerr.getImage()); 
+ 		heightmap = new ImageBasedHeightMap(testMountain.getImage()); 
  		heightmap.load(); 
  
  
@@ -292,17 +290,23 @@ public class FightingGame extends BaseGame implements KeyListener{
  		 
  		try 
  		{ 
-
- 		parkingLot = new TerrainBlock("tblock", 100, scaleFactor, heightmap.getHeightData(), new Point3D(0,0,0));
-
+ 	//	parkingLotT = new TerrainPage("terrainw", 65, 513, scaleFactor, heightmap.getHeightData());
+ 		parkingLot = new TerrainBlock("tblock", 512, scaleFactor, heightmap.getHeightData(), new Point3D( 0, 0, 0));
+ 		parkingLot.setTexture(northTex);
+ 		Matrix3D pLotT = parkingLot.getLocalTranslation();
+ 		pLotT.translate(0, -100, 0);
+ 		parkingLot.setLocalTranslation(pLotT);
+ 		Matrix3D pScale = parkingLot.getLocalScale();
+ 		pScale.scale(2f, 1f, 2f);
+ 		parkingLot.setLocalScale(pScale);
+ 		
  		} catch (Exception e) 
  		{ 
  			e.printStackTrace(); 
  		} 
- 		scene.addChild(parkingLot); 
-
+ 	//	scene.addChild(parkingLotT); 
+ 		scene.addChild(parkingLot);
  	 
- 		scene.addChild(pyr); 
 		addGameWorldObject(scene); 
  		 
  	} 
@@ -487,6 +491,7 @@ public class FightingGame extends BaseGame implements KeyListener{
       Matrix3D camTranslation = new Matrix3D();
       camTranslation.translate(camLoc.getX(), camLoc.getY(), camLoc.getZ());
       skybox.setLocalTranslation(camTranslation);
+     // parkingLot.setLocalTranslation(camTranslation);
       //Player 1's crash events 
       if (tpt.getWorldBound().intersects(p1.getWorldBound()) && collidedWTeapot == false){
          collidedWTeapot = true;
