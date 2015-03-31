@@ -70,6 +70,7 @@ public class Camera3Pcontroller{
          im.associateAction(cn, Key.W, zoomInAction, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
          im.associateAction(cn, Key.S, zoomOutAction, IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
       }
+
    }
    private class OrbitAroundAction extends AbstractInputAction{
       public void performAction(float time, Event evt){

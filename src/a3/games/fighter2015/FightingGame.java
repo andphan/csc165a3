@@ -261,9 +261,9 @@ public class FightingGame extends BaseGame implements KeyListener{
  
  		Texture northTex = TextureManager.loadTexture2D("src/a3/images/heightMapTest.jpg"); 
  		Texture southTex = TextureManager.loadTexture2D("src/a3/images/heightMapTest.jpg");
-      Texture eastTex = TextureManager.loadTexture2D("src/a3/images/lotTest.jpg"); 
+        Texture eastTex = TextureManager.loadTexture2D("src/a3/images/lotTest.jpg"); 
  		Texture westTex = TextureManager.loadTexture2D("src/a3/images/lotTest.jpg");
-      Texture upTex = TextureManager.loadTexture2D("src/a3/images/clouds.jpg"); 
+        Texture upTex = TextureManager.loadTexture2D("src/a3/images/clouds.jpg"); 
  		Texture downTex = TextureManager.loadTexture2D("src/a3/images/lot_floor.jpg");  
  		Texture testTerr = TextureManager.loadTexture2D("src/a3/images/squaresquare.bmp");
  		Texture floorTest = TextureManager.loadTexture2D("src/a3/images/testFloor.bmp");
@@ -272,10 +272,10 @@ public class FightingGame extends BaseGame implements KeyListener{
  	   skybox.setTexture(SkyBox.Face.North, northTex); 
  	   skybox.setTexture(SkyBox.Face.South, southTex);
       
-      skybox.setTexture(SkyBox.Face.East, eastTex); 
+       skybox.setTexture(SkyBox.Face.East, eastTex); 
  	   skybox.setTexture(SkyBox.Face.West, westTex); 
       
-     skybox.setTexture(SkyBox.Face.Up, upTex); 
+ 	   skybox.setTexture(SkyBox.Face.Up, upTex); 
  	   skybox.setTexture(SkyBox.Face.Down, downTex); 
  	   scene.addChild(skybox); 
  		 
@@ -292,13 +292,16 @@ public class FightingGame extends BaseGame implements KeyListener{
  		{ 
  	//	parkingLotT = new TerrainPage("terrainw", 65, 513, scaleFactor, heightmap.getHeightData());
  		parkingLot = new TerrainBlock("tblock", 512, scaleFactor, heightmap.getHeightData(), new Point3D( 0, 0, 0));
- 		parkingLot.setTexture(northTex);
+ 		parkingLot.setTexture(downTex);
  		Matrix3D pLotT = parkingLot.getLocalTranslation();
- 		pLotT.translate(0, -100, 0);
+ 		pLotT.translate(0.0f, -0.5f, 0.0f);
  		parkingLot.setLocalTranslation(pLotT);
  		Matrix3D pScale = parkingLot.getLocalScale();
- 		pScale.scale(2f, 1f, 2f);
+ 		pScale.scale(100f, 100f, 0);
  		parkingLot.setLocalScale(pScale);
+ 		Matrix3D pRot = new Matrix3D();
+ 		pRot.rotateX(90);
+ 		parkingLot.setLocalRotation(pRot);
  		
  		} catch (Exception e) 
  		{ 
