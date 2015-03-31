@@ -107,6 +107,7 @@ public class FightingGame extends BaseGame implements KeyListener{
    private Teapot tpt;
    private Sphere sph;
    private Pyramid p1;
+
    //private Cube p2;
    private MyDiamond jade;
    private TheChest chest;
@@ -123,7 +124,7 @@ public class FightingGame extends BaseGame implements KeyListener{
    private final ProtocolType serverProtocol;
    private MyClient thisClient;
    
-   private TerrainPage parkingLot;
+   private TerrainBlock parkingLot;
    private Group rootNode; 
  	private SkyBox skybox; 
    public FightingGame(String serverAddr, int sPort){ 
@@ -218,6 +219,7 @@ public class FightingGame extends BaseGame implements KeyListener{
  		Texture westTex = TextureManager.loadTexture2D("src/a3/images/lotTest.jpg");
       Texture upTex = TextureManager.loadTexture2D("src/a3/images/clouds.jpg"); 
  		Texture downTex = TextureManager.loadTexture2D("src/a3/images/lot_floor.jpg");  
+ 		Texture testTerr = TextureManager.loadTexture2D("src/a3/images/squaresquare.bmp");
 
  		 
  	   skybox.setTexture(SkyBox.Face.North, northTex); 
@@ -234,35 +236,26 @@ public class FightingGame extends BaseGame implements KeyListener{
  		pyr.translate(5, 2, 2); 
  		 
  	 
- 		//AbstractHeightMap heightmap = null; 
+ 		AbstractHeightMap heightmap = null; 
  
  
- 		//heightmap = new ImageBasedHeightMap(texF.getImage()); 
- 		//heightmap.load(); 
+ 		heightmap = new ImageBasedHeightMap(testTerr.getImage()); 
+ 		heightmap.load(); 
  
  
- 		//Vector3D scaleFactor = new Vector3D(new Point3D(1, 1, 1)); 
+ 		Vector3D scaleFactor = new Vector3D(new Point3D(1, 1, 1)); 
  		 
- 		/*try 
+ 		try 
  		{ 
- 		parkingLot = new TerrainPage("terrainp", 200, heightmap.getSize(), scaleFactor, heightmap.getHeightData()); 
- 	//	parkingLot = new TerrainBlock("tblock", 200, 513, heightmap.getHeightData()); 
- 	//	parkingLot = new TerrainBlock("terrainname", 200, scaleFactor, heightmap.getHeightData(), new Point3D(0, 0, 0)); 
+
+ 		parkingLot = new TerrainBlock("tblock", 100, scaleFactor, heightmap.getHeightData(), new Point3D(0,0,0));
+
  		} catch (Exception e) 
  		{ 
  			e.printStackTrace(); 
  		} 
  		scene.addChild(parkingLot); 
- 		 
- 		/* 
- 		Exception in thread "AWT-EventQueue-0" java.util.ConcurrentModificationException 
- 	at java.util.ArrayList$Itr.checkForComodification(Unknown Source) 
- 		*/ 
- 
- 
- //		parkingLot = new TerrainBlock("Terrain", 65, new Vector3D(10, 10, 10), null, new Point3D(0, 0, 0)); 
- 		 
- 	//    scene.addChild(parkingLot); 
+
  	 
  		scene.addChild(pyr); 
 		addGameWorldObject(scene); 
