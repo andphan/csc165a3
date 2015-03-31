@@ -152,7 +152,7 @@ public class FightingGame extends BaseGame implements KeyListener{
    
    private TerrainBlock parkingLot;
    private Group rootNode;
-   private Group lineNodes; 
+   private SceneNode lineNodes; 
    private SkyBox skybox; 
    public FightingGame(String serverAddr, int sPort){ 
       super();
@@ -166,7 +166,11 @@ public class FightingGame extends BaseGame implements KeyListener{
       im = getInputManager();
       eventMgr = EventManager.getInstance();
       // adding scripting stuff
-    
+      ScriptEngineManager factory = new ScriptEngineManager();
+      List<ScriptEngineFactory> list = factory.getEngineFactories();
+      engine = factory.getEngineByName("js");
+      scriptFile = new File(sName);
+      this.runScript();
       
       initGameObjects();
       createPlayers();
@@ -194,11 +198,7 @@ public class FightingGame extends BaseGame implements KeyListener{
       String Keyboard = im.getKeyboardName();
       String mouseName = im.getMouseName();
       
-      ScriptEngineManager factory = new ScriptEngineManager();
-      List<ScriptEngineFactory> list = factory.getEngineFactories();
-      engine = factory.getEngineByName("js");
-      scriptFile = new File(sName);
-      this.runScript();
+
       
       // scriptTestInput
       UpdatePlayerColor updateColor = new UpdatePlayerColor();
@@ -404,10 +404,13 @@ public class FightingGame extends BaseGame implements KeyListener{
    camera.setLocation(new Point3D(0,0,30));
    camera.setViewport(0.0, 1.0, 0.0, 0.45);*/
       
-      origin = new Point3D();
+   //   origin = new Point3D();
       rng = new Random();
+    
+      lineNodes = (SceneNode) engine.get("lineNodes");
+      addGameWorldObject(lineNodes);
       
-      // add some lines
+  /*    // add some lines
       Line xLine = new Line(origin, new Point3D(100,0,0), new Color(255,0,0), 1);
       addGameWorldObject(xLine);
       
@@ -416,7 +419,7 @@ public class FightingGame extends BaseGame implements KeyListener{
       
       Line zLine = new Line(origin, new Point3D(0,0,100), new Color(0,0,255), 1);
       addGameWorldObject(zLine);
-      
+   */   
       // add a rectangle, and turn it into a plane
      /* Rectangle plane = new Rectangle(1000, 1000);
       plane.rotate(90, new Vector3D(1,0,0));
