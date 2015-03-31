@@ -21,12 +21,14 @@ import sage.scene.shape.*;
 import sage.scene.HUDString;
 import sage.scene.TriMesh;
 import net.java.games.input.*;
+import sage.input.action.AbstractInputAction;
 import sage.input.action.IAction;
 import graphicslib3D.Point3D;
 import graphicslib3D.Matrix3D;
 import graphicslib3D.Vector3D;
 
 import java.awt.event.*;
+import java.util.List;
 import java.util.Random;
 import java.awt.Color;
 import java.text.DecimalFormat;
@@ -44,6 +46,8 @@ import java.nio.*;
 import java.util.ArrayList;
 import java.awt.image.BufferedImage; 
 import java.io.File; 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException; 
 import java.net.UnknownHostException;
 import java.net.URL; 
@@ -52,6 +56,14 @@ import sage.networking.IGameConnection.ProtocolType;
 
 import java.net.InetAddress;
  
+
+
+
+
+
+
+
+
 
 
 
@@ -71,6 +83,12 @@ import javax.imageio.ImageIO;
 
 
 
+
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 import a3.kmap165Engine.action.BackwardAction;
 import a3.kmap165Engine.action.ForwardAction;
@@ -92,6 +110,14 @@ import sage.event.*;
 
 public class FightingGame extends BaseGame implements KeyListener{
    private Camera3Pcontroller c0c, c1c, c2c;
+   // adding Scripting stuff
+   private ScriptEngine engine;
+   private String sName = "src/a3/games/fighter2015/TestScriptColor.js";
+   private File scriptFile;
+  
+  
+   // test
+   
    private IRenderer renderer;
    private int score1 = 0, /*score2 = 0,*/ numCrashes = 0;
    private float time1 = 0/*, time2 = 0 */;
@@ -125,8 +151,9 @@ public class FightingGame extends BaseGame implements KeyListener{
    private MyClient thisClient;
    
    private TerrainBlock parkingLot;
-   private Group rootNode; 
- 	private SkyBox skybox; 
+   private Group rootNode;
+   private Group lineNodes; 
+   private SkyBox skybox; 
    public FightingGame(String serverAddr, int sPort){ 
       super();
       this.serverAddress = serverAddr;
@@ -138,6 +165,9 @@ public class FightingGame extends BaseGame implements KeyListener{
       renderer = getDisplaySystem().getRenderer();
       im = getInputManager();
       eventMgr = EventManager.getInstance();
+      // adding scripting stuff
+    
+      
       initGameObjects();
       createPlayers();
       initInput();
@@ -154,12 +184,27 @@ public class FightingGame extends BaseGame implements KeyListener{
       if (thisClient != null) { 
          thisClient.sendJoinMessage(); 
       }
+      
+      
+      
    }
    private void initInput(){
       
       //String gpName = im.getFirstGamepadName();
       String Keyboard = im.getKeyboardName();
       String mouseName = im.getMouseName();
+      
+      ScriptEngineManager factory = new ScriptEngineManager();
+      List<ScriptEngineFactory> list = factory.getEngineFactories();
+      engine = factory.getEngineByName("js");
+      scriptFile = new File(sName);
+      this.runScript();
+      
+      // scriptTestInput
+      UpdatePlayerColor updateColor = new UpdatePlayerColor();
+      im.associateAction(Keyboard, net.java.games.input.Component.Identifier.Key.SPACE, updateColor, 
+    		  IInputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+      
       
       c1c = new Camera3Pcontroller(camera1,p1,im,mouseName);
       //c2c = new Camera3Pcontroller(camera2,p2,im,gpName);
@@ -431,6 +476,9 @@ public class FightingGame extends BaseGame implements KeyListener{
 
    }
    public void update(float elapsedTimeMS){
+	  
+	  
+	   
       //Update skybox's location
       Point3D camLoc = c1c.getLocation();
       Matrix3D camTranslation = new Matrix3D();
@@ -652,4 +700,51 @@ public class FightingGame extends BaseGame implements KeyListener{
    public void keyPressed(KeyEvent e){}
    public void keyReleased(KeyEvent e){}
    public void keyTyped(KeyEvent e){}
+   
+   
+   
+   // more scripting stuff for players
+   public class UpdatePlayerColor extends AbstractInputAction {
+				
+		public void performAction(float t, Event e)
+		{
+			Invocable invocable = (Invocable) engine;
+			SceneNode testingobject = tpt;
+			
+			try
+			{
+				invocable.invokeFunction("updateCharacter", testingobject); // error 
+			}
+			catch (ScriptException t1)
+			{
+				t1.printStackTrace();
+			}
+			catch (NoSuchMethodException t2)
+			{
+				t2.printStackTrace();
+			}
+			catch (NullPointerException t3)
+			{
+				t3.printStackTrace();
+			}
+		}
+
+	}
+   
+
+   private void runScript()
+    { try
+    	{ FileReader fileReader = new FileReader(scriptFile);
+ 		engine.eval(fileReader);
+ 		fileReader.close();
+ 	}
+    catch (FileNotFoundException e1)
+    { System.out.println(scriptFile + " not found " + e1); }
+    catch (IOException e2)
+    { System.out.println("IO problem with " + scriptFile + e2); }
+ catch (ScriptException e3)
+    { System.out.println("ScriptException in " + scriptFile + e3); }
+ catch (NullPointerException e4)
+    { System.out.println ("Null ptr exception reading " + scriptFile + e4); }
+    }
 }
