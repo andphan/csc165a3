@@ -9,18 +9,20 @@ import graphicslib3D.Vector3D;
 import graphicslib3D.Matrix3D;
 import sage.scene.SceneNode;
 import sage.scene.shape.*;
-
+import a3.kmap165Engine.network.*;
 public class BackwardAction extends AbstractInputAction{ 
    private SceneNode s;
    private Matrix3D sM;
-   public BackwardAction(SceneNode sn){ 
+   private MyClient client;
+   public BackwardAction(SceneNode sn, MyClient thisClient){ 
       s = sn;
       sM = s.getLocalTranslation();
-
+      client = thisClient;
    }
    public void performAction(float time, Event e){
       sM.translate(0,0,-0.1f);
       s.setLocalTranslation(sM);
       s.updateWorldBound();
+  //    client.sendMoveMessage(s.getLocalTranslation());
    }
 }

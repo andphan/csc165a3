@@ -56,34 +56,8 @@ import sage.networking.IGameConnection.ProtocolType;
 
 import java.net.InetAddress;
  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import javax.imageio.ImageIO; 
  
-
-
-
-
-
-
-
-
-
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
@@ -119,14 +93,14 @@ public class FightingGame extends BaseGame implements KeyListener{
    // test
    
    private IRenderer renderer;
-   private int score1 = 0, /*score2 = 0,*/ numCrashes = 0;
-   private float time1 = 0/*, time2 = 0 */;
-   private HUDString player1ScoreString, player1TimeString/*, player2ScoreString, player2TimeString*/;
+   private int score1 = 0, score2 = 0, numCrashes = 0;
+   private float time1 = 0, time2 = 0 ;
+   private HUDString player1ScoreString, player1TimeString, player2ScoreString, player2TimeString;
    private boolean isOver = false;
    private IDisplaySystem fullDisplay, display;
    private Point3D origin;
    private Random rng;
-   private ICamera camera1/*, camera2*/;
+   private ICamera camera1, camera2;
    private IInputManager im;
    private IEventManager eventMgr;
    private Cylinder cyl;
@@ -134,7 +108,7 @@ public class FightingGame extends BaseGame implements KeyListener{
    private Sphere sph;
    private Pyramid p1;
 
-   //private Cube p2;
+   private Cube p2;
    private MyDiamond jade;
    private TheChest chest;
    private boolean collidedWTeapot = false, collidedWPyramid = false, collidedWCylinder = false, 
@@ -150,12 +124,11 @@ public class FightingGame extends BaseGame implements KeyListener{
    private final ProtocolType serverProtocol;
    private MyClient thisClient;
    
-   private TerrainBlock parkingLot;
-   private TerrainPage parkingLotT;
+   private TerrainBlock parkingLot1, parkingLot2, parkingLot3, parkingLot4;
    private Group rootNode;
    private SceneNode lineNodes; 
-   private SkyBox skybox; 
-   public FightingGame(String serverAddr, int sPort){ 
+   private SkyBox skybox, skybox2; 
+   public FightingGame(String serverAddr, int sPort) throws IOException{ 
       super();
       this.serverAddress = serverAddr;
       this.serverPort = sPort;
@@ -177,8 +150,7 @@ public class FightingGame extends BaseGame implements KeyListener{
       createPlayers();
       initInput();
       try{ 
-         thisClient = new MyClient(InetAddress.getByName(serverAddress),
-         serverPort, serverProtocol, this); 
+         thisClient = new MyClient(InetAddress.getByName(serverAddress), serverPort, serverProtocol, this); 
       }
       catch (UnknownHostException e) { 
          e.printStackTrace(); 
@@ -188,14 +160,14 @@ public class FightingGame extends BaseGame implements KeyListener{
       }
       if (thisClient != null) { 
          thisClient.sendJoinMessage(); 
-      }
-      
-      
-      
+      }  
+   }
+   public MyClient getClient(){
+      return thisClient;
    }
    private void initInput(){
       
-      //String gpName = im.getFirstGamepadName();
+      String gpName = im.getFirstGamepadName();
       String Keyboard = im.getKeyboardName();
       String mouseName = im.getMouseName();
       
@@ -208,34 +180,35 @@ public class FightingGame extends BaseGame implements KeyListener{
       
       
       c1c = new Camera3Pcontroller(camera1,p1,im,mouseName);
+      //c2c = new Camera3Pcontroller(camera2,p2,im,mouseName);
       //c2c = new Camera3Pcontroller(camera2,p2,im,gpName);
       //Controls for P1
-      ForwardAction mvForward = new ForwardAction(p1);
+      ForwardAction mvForward = new ForwardAction(p1, thisClient);
       im.associateAction(Keyboard,
          net.java.games.input.Component.Identifier.Key.S,
          mvForward,
          IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
          
-      BackwardAction mvBackward = new BackwardAction(p1);
+      BackwardAction mvBackward = new BackwardAction(p1, thisClient);
       im.associateAction(Keyboard,
          net.java.games.input.Component.Identifier.Key.W,
          mvBackward,
          IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
          
-      LeftAction mvLeft = new LeftAction(p1);
+      LeftAction mvLeft = new LeftAction(p1, thisClient);
       im.associateAction(Keyboard,
          net.java.games.input.Component.Identifier.Key.A,
          mvLeft,
          IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
          
-      RightAction mvRight = new RightAction(p1);
+      RightAction mvRight = new RightAction(p1, thisClient);
       im.associateAction(Keyboard,
          net.java.games.input.Component.Identifier.Key.D,
          mvRight,
          IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
       
       //Controls for P2
-     /* X_Action_Controller xControl = new X_Action_Controller(p2);
+      /*X_Action_Controller xControl = new X_Action_Controller(p2);
       im.associateAction(gpName,
          net.java.games.input.Component.Identifier.Axis.X,
          xControl,
@@ -245,8 +218,32 @@ public class FightingGame extends BaseGame implements KeyListener{
       im.associateAction(gpName,
          net.java.games.input.Component.Identifier.Axis.Y,
          zControl,
+         IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+      ForwardAction mvForward2 = new ForwardAction(p2);
+      im.associateAction(Keyboard,
+         net.java.games.input.Component.Identifier.Key.K,
+         mvForward2,
+         IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+         
+      BackwardAction mvBackward2 = new BackwardAction(p2);
+      im.associateAction(Keyboard,
+         net.java.games.input.Component.Identifier.Key.I,
+         mvBackward2,
+         IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+         
+      LeftAction mvLeft2 = new LeftAction(p2);
+      im.associateAction(Keyboard,
+         net.java.games.input.Component.Identifier.Key.J,
+         mvLeft2,
+         IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+         
+      RightAction mvRight2 = new RightAction(p2);
+      im.associateAction(Keyboard,
+         net.java.games.input.Component.Identifier.Key.L,
+         mvRight2,
          IInputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);*/
-               
+         
+      //Quit Action         
       QuitAction stop = new QuitAction(this);
       im.associateAction(Keyboard,
          net.java.games.input.Component.Identifier.Key.ESCAPE,
@@ -259,8 +256,8 @@ public class FightingGame extends BaseGame implements KeyListener{
  		 
  	   skybox = new SkyBox("SkyBox", 100.0f, 100.0f, 100.0f); 
  
- 		Texture northTex = TextureManager.loadTexture2D("src/a3/images/heightMapTest.jpg"); 
- 		Texture southTex = TextureManager.loadTexture2D("src/a3/images/heightMapTest.jpg");
+ 		Texture northTex = TextureManager.loadTexture2D("src/a3/images/heightMapTest.JPG"); 
+ 		Texture southTex = TextureManager.loadTexture2D("src/a3/images/heightMapTest.JPG");
         Texture eastTex = TextureManager.loadTexture2D("src/a3/images/lotTest.jpg"); 
  		Texture westTex = TextureManager.loadTexture2D("src/a3/images/lotTest.jpg");
         Texture upTex = TextureManager.loadTexture2D("src/a3/images/clouds.jpg"); 
@@ -276,8 +273,12 @@ public class FightingGame extends BaseGame implements KeyListener{
  	   skybox.setTexture(SkyBox.Face.West, westTex); 
       
  	   skybox.setTexture(SkyBox.Face.Up, upTex); 
- 	   skybox.setTexture(SkyBox.Face.Down, downTex); 
- 	   scene.addChild(skybox); 
+ 	   skybox.setTexture(SkyBox.Face.Down, downTex);
+      
+ 	   scene.addChild(skybox);
+      
+      //skybox2 = skybox; 
+      //scene.addChild(skybox2); 
  		 
  		AbstractHeightMap heightmap = null; 
  
@@ -290,26 +291,67 @@ public class FightingGame extends BaseGame implements KeyListener{
  		 
  		try 
  		{ 
- 	//	parkingLotT = new TerrainPage("terrainw", 65, 513, scaleFactor, heightmap.getHeightData());
- 		parkingLot = new TerrainBlock("tblock", 512, scaleFactor, heightmap.getHeightData(), new Point3D( 0, 0, 0));
- 		parkingLot.setTexture(downTex);
- 		Matrix3D pLotT = parkingLot.getLocalTranslation();
- 		pLotT.translate(0.0f, -0.5f, 0.0f);
- 		parkingLot.setLocalTranslation(pLotT);
- 		Matrix3D pScale = parkingLot.getLocalScale();
- 		pScale.scale(100f, 100f, 0);
- 		parkingLot.setLocalScale(pScale);
- 		Matrix3D pRot = new Matrix3D();
- 		pRot.rotateX(90);
- 		parkingLot.setLocalRotation(pRot);
+ 		parkingLot1 = new TerrainBlock("tblock", 512, scaleFactor, heightmap.getHeightData(), new Point3D( 0, 0, 0));
+ 		parkingLot1.setTexture(downTex);
+ 		Matrix3D p1LotT = parkingLot1.getLocalTranslation();
+ 		p1LotT.translate(0.0f, -0.5f, 0.0f);
+ 		parkingLot1.setLocalTranslation(p1LotT);
+ 		Matrix3D p1Scale = parkingLot1.getLocalScale();
+ 		p1Scale.scale(10f, 10f, 0);
+ 		parkingLot1.setLocalScale(p1Scale);
+ 		Matrix3D p1Rot = new Matrix3D();
+ 		p1Rot.rotateX(-90);
+ 		parkingLot1.setLocalRotation(p1Rot);
+ 		
+ 		
+ 		parkingLot2 = new TerrainBlock("tblock2", 512, scaleFactor, heightmap.getHeightData(), new Point3D( 0, 0, 0));
+ 		parkingLot2.setTexture(upTex);
+ 		Matrix3D p2LotT = parkingLot2.getLocalTranslation();
+ 		p2LotT.translate(0.0f, -0.5f, 0.0f);
+ 		parkingLot2.setLocalTranslation(p2LotT);
+ 		Matrix3D p2Scale = parkingLot2.getLocalScale();
+ 		p2Scale.scale(10f, 10f, 0);
+ 		parkingLot2.setLocalScale(p2Scale);
+ 		Matrix3D p2Rot = new Matrix3D();
+ 		p2Rot.rotateZ(90);
+ 		p2Rot.rotateY(90);
+ 		parkingLot2.setLocalRotation(p2Rot);
+ 		
+ 		parkingLot3 = new TerrainBlock("tblock3", 512, scaleFactor, heightmap.getHeightData(), new Point3D( 0, 0, 0));
+ 		parkingLot3.setTexture(eastTex);
+ 		Matrix3D p3LotT = parkingLot3.getLocalTranslation();
+ 		p3LotT.translate(0.0f, -0.5f, 0.0f);
+ 		parkingLot3.setLocalTranslation(p3LotT);
+ 		Matrix3D p3Scale = parkingLot3.getLocalScale();
+ 		p3Scale.scale(100f, 100f, 0);
+ 		parkingLot3.setLocalScale(p3Scale);
+ 		Matrix3D p3Rot = new Matrix3D();
+ 		p3Rot.rotateX(90);
+ 		parkingLot3.setLocalRotation(p3Rot);
+ 		
+ 		parkingLot4 = new TerrainBlock("tblock4", 512, scaleFactor, heightmap.getHeightData(), new Point3D( 0, 0, 0));
+ 		parkingLot4.setTexture(upTex);
+ 		Matrix3D p4LotT = parkingLot4.getLocalTranslation();
+ 		p4LotT.translate(0.0f, -0.5f, 0.0f);
+ 		parkingLot2.setLocalTranslation(p2LotT);
+ 		Matrix3D p4Scale = parkingLot4.getLocalScale();
+ 		p4Scale.scale(10f, 10f, 0);
+ 		parkingLot4.setLocalScale(p4Scale);
+ 		Matrix3D p4Rot = new Matrix3D();
+ 		p4Rot.rotateZ(90);
+ 		p4Rot.rotateY(-90);
+ 		parkingLot4.setLocalRotation(p4Rot);
  		
  		} catch (Exception e) 
  		{ 
  			e.printStackTrace(); 
  		} 
  	//	scene.addChild(parkingLotT); 
- 		scene.addChild(parkingLot);
- 	 
+ 		scene.addChild(parkingLot1);
+ 		scene.addChild(parkingLot2);
+ 		scene.addChild(parkingLot3);
+ 		scene.addChild(parkingLot4);
+ 	 	 
 		addGameWorldObject(scene); 
  		 
  	} 
@@ -377,8 +419,8 @@ public class FightingGame extends BaseGame implements KeyListener{
       player1ScoreString.setCullMode(sage.scene.SceneNode.CULL_MODE.NEVER);
       camera1.addToHUD(player1ScoreString);
       
-      /*// Player 2 identity HUD
-      HUDString player2ID = new HUDString("Player2");
+      // Player 2 identity HUD
+      /*HUDString player2ID = new HUDString("Player2");
       player2ID.setName("Player2ID");
       player2ID.setLocation(0.01, 0.12);
       player2ID.setRenderMode(sage.scene.SceneNode.RENDER_MODE.ORTHO);
@@ -494,6 +536,12 @@ public class FightingGame extends BaseGame implements KeyListener{
       Matrix3D camTranslation = new Matrix3D();
       camTranslation.translate(camLoc.getX(), camLoc.getY(), camLoc.getZ());
       skybox.setLocalTranslation(camTranslation);
+      
+      //Update skybox2's location
+      /*Point3D camLoc2 = c2c.getLocation();
+      Matrix3D camTranslation2 = new Matrix3D();
+      camTranslation2.translate(camLoc2.getX(), camLoc2.getY(), camLoc2.getZ());
+      skybox2.setLocalTranslation(camTranslation2);*/
      // parkingLot.setLocalTranslation(camTranslation);
       //Player 1's crash events 
       if (tpt.getWorldBound().intersects(p1.getWorldBound()) && collidedWTeapot == false){
@@ -579,7 +627,9 @@ public class FightingGame extends BaseGame implements KeyListener{
       //c0c.update(elapsedTimeMS);
       c1c.update(elapsedTimeMS);
       //c2c.update(elapsedTimeMS);
+      
       if (thisClient != null) thisClient.processPackets();
+      
       super.update(elapsedTimeMS);
    }
    private void createPillar(){
@@ -648,8 +698,8 @@ public class FightingGame extends BaseGame implements KeyListener{
    protected void render(){
       renderer.setCamera(camera1);
       super.render();
-      //renderer.setCamera(camera2);
-      //super.render();
+      /*renderer.setCamera(camera2);
+      super.render();*/
    }
    private IDisplaySystem createDisplaySystem(){
       display = new MyDisplaySystem(1920, 1200, 32, 60, true,
@@ -686,7 +736,7 @@ public class FightingGame extends BaseGame implements KeyListener{
          catch (IOException e) {
             e.printStackTrace(); 
          }
-      } 
+      }
    }
    /*protected void initSystem(){ 
       //call a local method to create a DisplaySystem object
@@ -699,9 +749,9 @@ public class FightingGame extends BaseGame implements KeyListener{
       ArrayList<SceneNode> gameWorld = new ArrayList<SceneNode>();
       setGameWorld(gameWorld);
    }*/
-   public Vector3D getPlayerPosition(){
-      return new Vector3D();
-   } 
+   public Matrix3D getPlayerPosition(){
+      return p1.getLocalTranslation();
+   }
    public boolean isConnected(){
       return isConnected();
    }

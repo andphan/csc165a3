@@ -85,7 +85,7 @@ public class TreasureGame extends BaseGame implements KeyListener{
    }
    private void initInput(){
       
-      String gpName = im.getFirstGamepadName();
+ /*     String gpName = im.getFirstGamepadName();
       String Keyboard = im.getKeyboardName();
       String mouseName = im.getMouseName();
       
@@ -133,7 +133,8 @@ public class TreasureGame extends BaseGame implements KeyListener{
       im.associateAction(Keyboard,
          net.java.games.input.Component.Identifier.Key.ESCAPE,
          stop,
-         IInputManager.INPUT_ACTION_TYPE.ON_PRESS_AND_RELEASE);      
+         IInputManager.INPUT_ACTION_TYPE.ON_PRESS_AND_RELEASE);   
+         */   
    }
    private void createPlayers(){ 
       p1 = new Pyramid("PLAYER1");
