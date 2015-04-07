@@ -41,6 +41,8 @@ import sage.scene.shape.Teapot;
 import sage.scene.shape.Sphere;
 import sage.scene.shape.Cube;
 import sage.scene.shape.Rectangle;
+import sage.scene.state.RenderState;
+import sage.scene.state.TextureState;
 
 import java.nio.*;
 import java.util.ArrayList;
@@ -56,6 +58,8 @@ import sage.networking.IGameConnection.ProtocolType;
 
 import java.net.InetAddress;
  
+
+
 import javax.imageio.ImageIO; 
  
 import javax.script.Invocable;
@@ -147,6 +151,7 @@ public class FightingGame extends BaseGame implements KeyListener{
       this.runScript();
       
       initGameObjects();
+ //     initTerrain();
       createPlayers();
       initInput();
       try{ 
@@ -263,7 +268,7 @@ public class FightingGame extends BaseGame implements KeyListener{
         Texture upTex = TextureManager.loadTexture2D("src/a3/images/clouds.jpg"); 
  		Texture downTex = TextureManager.loadTexture2D("src/a3/images/lot_floor.jpg");  
  		Texture testTerr = TextureManager.loadTexture2D("src/a3/images/squaresquare.bmp");
- 		Texture floorTest = TextureManager.loadTexture2D("src/a3/images/testFloor.bmp");
+
  		Texture testMountain = TextureManager.loadTexture2D("src/a3/images/mountains512.jpg");
  		 
  	   skybox.setTexture(SkyBox.Face.North, northTex); 
@@ -279,6 +284,9 @@ public class FightingGame extends BaseGame implements KeyListener{
       
       //skybox2 = skybox; 
       //scene.addChild(skybox2); 
+
+ 	 //  scene.addChild(parkingLot);
+ 	   
  		 
  		AbstractHeightMap heightmap = null; 
  
@@ -351,7 +359,7 @@ public class FightingGame extends BaseGame implements KeyListener{
  		scene.addChild(parkingLot2);
  		scene.addChild(parkingLot3);
  		scene.addChild(parkingLot4);
- 	 	 
+ 		 
 		addGameWorldObject(scene); 
  		 
  	} 
@@ -808,4 +816,38 @@ public class FightingGame extends BaseGame implements KeyListener{
  catch (NullPointerException e4)
     { System.out.println ("Null ptr exception reading " + scriptFile + e4); }
     }
+   
+   private TerrainBlock createTerBlock(AbstractHeightMap heightmap)
+   {
+	   float heightscale = .005f;
+	   Vector3D terrainScale = new Vector3D(100, heightscale, 100);
+	   
+	   int terrainsize = heightmap.getSize();
+	   
+	   float cornerheight = heightmap.getTrueHeightAtPoint(0,0)*heightscale;
+	   Point3D terrainOrig = new Point3D(0,-cornerheight, 0);
+	   
+	   String name = "terrain" + heightmap.getClass().getSimpleName();
+	   TerrainBlock tb = new TerrainBlock(name, terrainsize, terrainScale, heightmap.getHeightData(), terrainOrig);
+	   return tb;
+   }
+   private void initTerrain()
+   {
+	   
+	   
+	   HillHeightMap myHeightMap = new HillHeightMap(129, 2000, 5.0f, 20.0f, (byte)2, 12345);
+	   myHeightMap.setHeightScale(0.1f);
+	   TerrainBlock hillTerr = createTerBlock(myHeightMap);
+	   TextureState groundState;
+	   Texture floorTexture = TextureManager.loadTexture2D("lot_floor.jpg");
+	   floorTexture.setApplyMode(sage.texture.Texture.ApplyMode.Replace);
+	//   groundState = (TextureState)
+	//		   display.getRenderer().createRenderState(RenderState.RenderStateType.Texture);
+	//   groundState.setTexture(floorTexture, 0);
+	//   groundState.setEnabled(true);
+	   
+	 //  hillTerr.setRenderState(groundState);
+	   hillTerr.setTexture(floorTexture);
+	   addGameWorldObject(hillTerr);
+   }
 }
